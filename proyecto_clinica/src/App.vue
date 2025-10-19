@@ -4,205 +4,354 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <div id="app-layout">
-    <header class="main-header">
+    <aside class="sidebar-nav">
       <div class="logo-container">
-        <!-- He reemplazado el logo de Vue por un SVG simple de una cruz médica -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-          <path d="M12 5v14M5 12h14"/>
-        </svg>
-        <span class="clinic-name">Clínica Bienestar</span>
+        <div class="logo-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </div>
+        <span class="clinic-name">Bienestar</span>
       </div>
 
       <nav class="main-nav">
-        <RouterLink to="/">Inicio</RouterLink>
-        <RouterLink to="/pacientes">Registro de Pacientes</RouterLink>
-        <RouterLink to="/citas">Citas</RouterLink>
-        <RouterLink to="/agenda">Agenda Médica</RouterLink>
-        <RouterLink to="/medicos">Médicos</RouterLink>
-        <RouterLink to="/servicios">Servicios</RouterLink>
-        <RouterLink to="/doctores">Doctores</RouterLink>
-        <RouterLink to="/calendario">Calendario</RouterLink>
-        <RouterLink to="/about">Acerca de</RouterLink>
+        <RouterLink to="/" class="nav-item">
+          <span class="icon">🏠</span> Inicio
+        </RouterLink>
+        <RouterLink to="/agenda" class="nav-item">
+          <span class="icon">📅</span> Agenda Médica
+        </RouterLink>
+        <RouterLink to="/citas" class="nav-item">
+          <span class="icon">📋</span> Citas
+        </RouterLink>
+        <RouterLink to="/pacientes" class="nav-item">
+          <span class="icon">🧑‍🤝‍🧑</span> Pacientes
+        </RouterLink>
+        <RouterLink to="/medicos" class="nav-item">
+          <span class="icon">👨‍⚕️</span> Médicos
+        </RouterLink>
+        <RouterLink to="/servicios" class="nav-item">
+          <span class="icon">💉</span> Servicios
+        </RouterLink>
+        <RouterLink to="/calendario" class="nav-item">
+          <span class="icon">🗓️</span> Calendario
+        </RouterLink>
+        <hr class="nav-separator">
+        <RouterLink to="/about" class="nav-item">
+          <span class="icon">ℹ️</span> Acerca de
+        </RouterLink>
       </nav>
-    </header>
+    </aside>
 
-    <main class="content-view">
-      <!-- Aquí se renderizan las vistas del router -->
-      <RouterView />
-
-      <!-- 🔹 Botones rápidos del Dashboard -->
-      <div class="dashboard-buttons">
-        <h2>Panel de Navegación Rápida</h2>
-        <div class="button-grid">
-          <RouterLink to="/agenda" class="dash-btn">📅 Ir a Agenda Médica</RouterLink>
-          <RouterLink to="/doctores" class="dash-btn">👨‍⚕️ Ver Doctores</RouterLink>
-          <RouterLink to="/calendario" class="dash-btn">🗓️ Abrir Calendario</RouterLink>
+    <div class="content-wrapper">
+      <header class="main-header">
+        <h1 class="header-title">Panel de Administración de la Clínica</h1>
+        <div class="user-info">
+          <span class="user-name">Dr. Pérez</span>
+          <img src="https://via.placeholder.com/40" alt="Avatar" class="user-avatar">
         </div>
-      </div>
-    </main>
+      </header>
+
+      <main class="content-view">
+        <RouterView />
+
+        <div class="quick-links-panel">
+          <h3>Accesos Rápidos</h3>
+          <div class="link-grid">
+            <RouterLink to="/citas" class="quick-link-btn primary-bg">
+              Nueva Cita
+            </RouterLink>
+            <RouterLink to="/pacientes" class="quick-link-btn secondary-bg">
+              Nuevo Paciente
+            </RouterLink>
+            <RouterLink to="/agenda" class="quick-link-btn tertiary-bg">
+              Ver Hoy
+            </RouterLink>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
 <style>
-/* 🎨 Estilos Globales */
+/* ========================================================= */
+/* 🎨 ESTILOS GENERALES Y VARIABLES (Tema Limpio Médico) */
+/* ========================================================= */
 :root {
-  --primary-color: #007bff; /* Azul primario */
-  --secondary-color: #6c757d; /* Gris secundario */
-  --background-color: #f4f7f6; /* Fondo claro tipo dashboard */
-  --header-background: #ffffff; /* Fondo del header */
-  --text-color: #333;
-  --text-light: #f8f9fa;
-  --border-color: #dee2e6;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --primary-color: #1a73e8; /* Azul profesional y confiable */
+  --primary-light: #e8f0fe;
+  --secondary-color: #00bcd4; /* Cian para acentos o éxito */
+  --tertiary-color: #ff9800; /* Naranja suave para warnings/atención */
+  --background-color: #f7f9fc; /* Fondo muy claro y profesional */
+  --text-color: #3c4043; /* Gris oscuro para legibilidad */
+  --text-light: #ffffff;
+  --sidebar-width: 250px;
+  --header-height: 60px;
+  --border-radius: 8px;
+  --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+  line-height: 1.6;
 }
 
+/* ========================================================= */
+/* 🏠 LAYOUT PRINCIPAL (Flexbox para Sidebar y Contenido) */
+/* ========================================================= */
 #app-layout {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
 }
 
-/* 🧭 Estilos del Header y Navegación */
+/* 🧭 BARRA LATERAL (SIDEBAR) */
+.sidebar-nav {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background-color: var(--text-light); /* Fondo blanco */
+  box-shadow: var(--shadow-medium);
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh; /* Ocupa toda la altura */
+}
+
+/* Logo en Sidebar */
+.logo-container {
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem 1.5rem 1.5rem; /* Padding inferior para separarlo del menú */
+  border-bottom: 1px solid var(--primary-light);
+  margin-bottom: 1rem;
+}
+
+.logo-icon-wrapper {
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  line-height: 0;
+}
+
+.logo-icon {
+  color: var(--text-light);
+}
+
+.clinic-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Navegación Principal */
+.main-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0 1rem;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item .icon {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.nav-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+/* Enlace activo */
+.nav-item.router-link-exact-active {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  font-weight: 600;
+  box-shadow: var(--shadow-light);
+}
+
+.nav-item.router-link-exact-active .icon {
+  filter: grayscale(1) brightness(20); /* Asegura que el emoji se vea bien sobre fondo azul */
+}
+
+.nav-separator {
+  border: 0;
+  height: 1px;
+  background-color: var(--primary-light);
+  margin: 1rem 0;
+}
+
+/* ========================================================= */
+/* 📦 CONTENIDO PRINCIPAL Y HEADER SUPERIOR */
+/* ========================================================= */
+.content-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Superior (dentro del content-wrapper) */
 .main-header {
-  background-color: var(--header-background);
-  box-shadow: var(--shadow);
-  padding: 1rem 2rem;
+  height: var(--header-height);
+  background-color: var(--text-light);
+  box-shadow: var(--shadow-light);
+  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 990;
 }
 
-.logo-container {
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.user-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.logo-icon {
-  color: var(--primary-color);
-}
-
-.clinic-name {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--primary-color);
-}
-
-.main-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-
-.main-nav a {
-  text-decoration: none;
-  color: var(--secondary-color);
+.user-name {
   font-weight: 500;
-  padding: 0.5rem 0;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-.main-nav a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease;
-}
-
-.main-nav a:hover {
   color: var(--primary-color);
 }
 
-.main-nav a:hover::after {
-  width: 100%;
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
 }
 
-/* Enlace activo */
-.main-nav a.router-link-exact-active {
-  color: var(--primary-color);
-  font-weight: 700;
-}
-.main-nav a.router-link-exact-active::after {
-  width: 100%;
-}
-
-/* 📦 Contenido principal */
+/* Área de Vistas (donde se renderiza RouterView) */
 .content-view {
   flex-grow: 1;
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-/* 🧩 Dashboard de botones */
-.dashboard-buttons {
+/* ⚡ Panel de Enlaces Rápidos */
+.quick-links-panel {
   margin-top: 2rem;
-  background-color: white;
-  box-shadow: var(--shadow);
-  padding: 2rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 800px;
-  text-align: center;
+  background-color: var(--text-light);
+  box-shadow: var(--shadow-light);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
 }
 
-.dashboard-buttons h2 {
+.quick-links-panel h3 {
   color: var(--primary-color);
-  margin-bottom: 1.5rem;
-  font-size: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 0.5rem;
 }
 
-.button-grid {
-  display: flex;
-  flex-wrap: wrap;
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  justify-content: center;
 }
 
-.dash-btn {
-  background-color: var(--primary-color);
-  color: white;
+.quick-link-btn {
+  color: var(--text-light);
   text-decoration: none;
-  padding: 0.9rem 1.5rem;
-  border-radius: 8px;
+  padding: 1rem;
+  border-radius: var(--border-radius);
   font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.2s;
-  display: inline-block;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
 }
 
-.dash-btn:hover {
-  background-color: #0056b3;
+.quick-link-btn:hover {
+  opacity: 0.9;
   transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Clases de colores para los botones */
+.primary-bg {
+  background-color: var(--primary-color);
+}
+.secondary-bg {
+  background-color: var(--secondary-color);
+}
+.tertiary-bg {
+  background-color: var(--tertiary-color);
+}
+
+
+/* ========================================================= */
+/* 📱 MEDIA QUERIES (Responsivo) */
+/* ========================================================= */
+
+@media (max-width: 1024px) {
+  .sidebar-nav {
+    width: 200px;
+    min-width: 200px;
+  }
+  .content-view {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .main-nav {
-    gap: 1rem;
-    font-size: 0.9rem;
+  /* Oculta la sidebar y mueve la navegación a la parte superior (opcionalmente oculta con un menú hamburguesa) */
+  .sidebar-nav {
+    display: none; /* Simplificamos para el móvil */
   }
-  .button-grid {
+
+  #app-layout {
     flex-direction: column;
   }
-  .dash-btn {
+
+  .main-header {
+    height: auto;
+    padding: 1rem 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .header-title {
+    font-size: 1.1rem;
+  }
+
+  .user-info {
+    justify-content: space-between;
     width: 100%;
+  }
+
+  .content-view {
+    padding: 1rem;
+  }
+
+  .link-grid {
+    grid-template-columns: 1fr; /* Una columna en móvil */
   }
 }
 </style>
