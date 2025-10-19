@@ -1,33 +1,52 @@
 <template>
   <div class="patient-form-container">
-    <!-- El formulario ahora está dentro de una tarjeta para consistencia visual -->
     <div class="form-card">
-      <!-- El título cambia dinámicamente si estamos editando o registrando -->
       <h2 class="form-title">{{ isEditing ? 'Editando Paciente' : 'Registro de Paciente' }}</h2>
 
-      <!-- Mensaje de éxito que reemplaza al alert() -->
       <div v-if="showSuccessMessage" class="success-message">
         {{ successMessage }}
       </div>
 
-      <!-- Usamos .prevent para evitar que la página se recargue al enviar -->
-      <form @submit.prevent="handleSubmit" class="patient-form">
-        <!-- Cédula (deshabilitada durante la edición para no cambiar el ID) -->
+      <form @submit.prevent="handleSubmit" class="patient-form" novalidate>
+        <!-- Cédula -->
         <div class="input-group">
           <label for="cedula">Cédula:</label>
-          <input id="cedula" v-model="paciente.cedula_paciente" type="text" placeholder="V-12345678" :disabled="isEditing" required />
+          <input
+            id="cedula"
+            v-model="paciente.cedula_paciente"
+            type="text"
+            placeholder="Solo números"
+            maxlength="8"
+            @input="soloNumeros('cedula_paciente')"
+            :disabled="isEditing"
+            required
+          />
         </div>
 
         <!-- Nombre -->
         <div class="input-group">
           <label for="nombre">Nombre:</label>
-          <input id="nombre" v-model="paciente.nombre_paciente" type="text" required />
+          <input
+            id="nombre"
+            v-model="paciente.nombre_paciente"
+            type="text"
+            placeholder="Solo letras"
+            @input="soloLetras('nombre_paciente')"
+            required
+          />
         </div>
 
         <!-- Apellido -->
         <div class="input-group">
           <label for="apellido">Apellido:</label>
-          <input id="apellido" v-model="paciente.apellido_paciente" type="text" required />
+          <input
+            id="apellido"
+            v-model="paciente.apellido_paciente"
+            type="text"
+            placeholder="Solo letras"
+            @input="soloLetras('apellido_paciente')"
+            required
+          />
         </div>
 
         <!-- Sexo -->
@@ -43,35 +62,47 @@
         <!-- Teléfono -->
         <div class="input-group">
           <label for="telefono">Teléfono:</label>
-          <input id="telefono" v-model="paciente.telefono" type="tel" />
+          <input
+            id="telefono"
+            v-model="paciente.telefono"
+            type="text"
+            placeholder="Solo números"
+            maxlength="13"
+            @input="soloNumeros('telefono')"
+          />
         </div>
 
         <!-- Seguro -->
         <div class="input-group">
           <label for="seguro">Seguro:</label>
-          <input id="seguro" v-model="paciente.seguro" type="text" placeholder="Ej: IVSS, MPPS" />
+          <input
+            id="seguro"
+            v-model="paciente.seguro"
+            type="text"
+            placeholder="Ej: IVSS, MPPS"
+          />
         </div>
 
-        <div class="input-group">
-          <label for="cargo">Cargo:</label>
-          <input id="cargo" v-model="paciente.cargo" type="text" maxlength="1" placeholder="P (paciente)" />
-        </div>
-
+        <!-- Estado -->
         <div class="input-group">
           <label for="estado">Estado:</label>
-           <select id="estado" v-model="paciente.estado" required>
+          <select id="estado" v-model="paciente.estado" required>
             <option value="Activo">Activo</option>
             <option value="Inactivo">Inactivo</option>
           </select>
         </div>
 
-        <!-- Botones de Acción del Formulario -->
         <div class="form-actions">
           <button type="submit" :disabled="isSubmitting" class="submit-button">
             {{ isEditing ? (isSubmitting ? 'Actualizando...' : 'Actualizar Paciente') : (isSubmitting ? 'Registrando...' : 'Registrar Paciente') }}
           </button>
-          <!-- Botón para cancelar la edición -->
-          <button v-if="isEditing" @click="cancelarEdicion" type="button" class="cancel-button">
+
+          <button
+            v-if="isEditing"
+            @click="cancelarEdicion"
+            type="button"
+            class="cancel-button"
+          >
             Cancelar Edición
           </button>
         </div>
@@ -80,38 +111,57 @@
 
     <hr class="separator" />
 
-    <!-- Lista de pacientes registrados -->
+    <!-- Lista -->
     <div class="patient-list-section">
       <div class="list-header">
         <h3 class="list-title">Pacientes Registrados</h3>
-        <!-- Barra de búsqueda -->
         <div class="search-bar">
-          <input type="text" v-model="searchTerm" placeholder="Buscar por nombre, apellido o cédula..." />
+          <input
+            type="text"
+            v-model="searchTerm"
+            placeholder="Buscar por nombre, apellido o cédula..."
+          />
         </div>
       </div>
 
-      <div v-if="filteredPacientes.length === 0" class="no-patients-message">
+      <div
+        v-if="filteredPacientes.length === 0"
+        class="no-patients-message"
+      >
         {{ pacientes.length > 0 ? 'No se encontraron pacientes con ese criterio.' : 'Aún no hay pacientes registrados.' }}
       </div>
+
       <div v-else class="pacientes-grid">
-        <!-- Ahora iteramos sobre los pacientes filtrados -->
-        <div class="paciente-card" v-for="p in filteredPacientes" :key="p.cedula_paciente">
+        <div
+          class="paciente-card"
+          v-for="p in filteredPacientes"
+          :key="p.cedula_paciente"
+        >
           <div class="card-header">
             <strong>{{ p.nombre_paciente }} {{ p.apellido_paciente }}</strong>
-            <span class="status-badge" :class="p.estado === 'Activo' ? 'activo' : 'inactivo'">
+            <span
+              class="status-badge"
+              :class="p.estado === 'Activo' ? 'activo' : 'inactivo'"
+            >
               {{ p.estado }}
             </span>
           </div>
+
           <div class="card-body">
             <p><strong>Cédula:</strong> {{ p.cedula_paciente }}</p>
             <p><strong>Sexo:</strong> {{ p.sexo }}</p>
             <p><strong>Teléfono:</strong> {{ p.telefono || 'No especificado' }}</p>
             <p><strong>Seguro:</strong> {{ p.seguro || 'No especificado' }}</p>
           </div>
-          <!-- Botones de Acción en la Tarjeta -->
+
           <div class="card-actions">
             <button @click="iniciarEdicion(p)" class="edit-btn">Editar</button>
-            <button @click="eliminarPaciente(p.cedula_paciente)" class="delete-btn">Eliminar</button>
+            <button
+              @click="eliminarPaciente(p.cedula_paciente)"
+              class="delete-btn"
+            >
+              Eliminar
+            </button>
           </div>
         </div>
       </div>
@@ -119,13 +169,13 @@
   </div>
 </template>
 
+
+
 <script setup>
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, reactive, watch, computed } from 'vue'
 
-// --- EMITS ---
-const emit = defineEmits(['paciente-registrado', 'paciente-actualizado', 'paciente-eliminado']);
+const emit = defineEmits(['paciente-registrado', 'paciente-actualizado', 'paciente-eliminado'])
 
-// --- ESTADO REACTIVO ---
 const paciente = reactive({
   cedula_paciente: '',
   nombre_paciente: '',
@@ -134,62 +184,70 @@ const paciente = reactive({
   telefono: '',
   seguro: '',
   estado: 'Activo',
-  cargo: 'P'
-});
+  cargo: 'P' // fijo
+})
 
-const pacientes = ref(JSON.parse(localStorage.getItem('pacientes')) || []);
-const isSubmitting = ref(false);
-const showSuccessMessage = ref(false);
-const successMessage = ref('');
+const pacientes = ref(JSON.parse(localStorage.getItem('pacientes')) || [])
+const isSubmitting = ref(false)
+const showSuccessMessage = ref(false)
+const successMessage = ref('')
+const isEditing = ref(false)
+const pacienteEditId = ref(null)
+const searchTerm = ref('')
 
-// --- NUEVO ESTADO PARA EDICIÓN Y BÚSQUEDA ---
-const isEditing = ref(false);
-const pacienteEditId = ref(null);
-const searchTerm = ref('');
-
-// --- PROPIEDAD COMPUTADA PARA FILTRAR PACIENTES ---
+// ✅ Filtrado dinámico
 const filteredPacientes = computed(() => {
-  if (!searchTerm.value) {
-    return pacientes.value;
-  }
-  const lowerCaseSearch = searchTerm.value.toLowerCase();
+  if (!searchTerm.value) return pacientes.value
+  const s = searchTerm.value.toLowerCase()
   return pacientes.value.filter(p =>
-    p.nombre_paciente.toLowerCase().includes(lowerCaseSearch) ||
-    p.apellido_paciente.toLowerCase().includes(lowerCaseSearch) ||
-    p.cedula_paciente.toLowerCase().includes(lowerCaseSearch)
-  );
-});
+    p.nombre_paciente.toLowerCase().includes(s) ||
+    p.apellido_paciente.toLowerCase().includes(s) ||
+    p.cedula_paciente.toLowerCase().includes(s)
+  )
+})
 
-// --- MÉTODOS ---
-const handleSubmit = () => {
-  if (isSubmitting.value) return;
-  isSubmitting.value = true;
+// 🚫 Validaciones en tiempo real
+const soloNumeros = (campo) => {
+  paciente[campo] = paciente[campo].replace(/[^0-9]/g, '')
+}
+
+const soloLetras = (campo) => {
+  paciente[campo] = paciente[campo].replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, '')
+}
+
+// 💾 Envío del formulario
+const handleSubmit = (e) => {
+  const form = e.target
+  if (!form.checkValidity()) {
+    form.reportValidity()
+    return
+  }
+
+  if (isSubmitting.value) return
+  isSubmitting.value = true
 
   if (isEditing.value) {
-    // Lógica para actualizar
-    const index = pacientes.value.findIndex(p => p.cedula_paciente === pacienteEditId.value);
+    const index = pacientes.value.findIndex(p => p.cedula_paciente === pacienteEditId.value)
     if (index !== -1) {
-      pacientes.value[index] = { ...paciente };
-      emit('paciente-actualizado', pacientes.value[index]);
-      mostrarMensajeExito('¡Paciente actualizado con éxito!');
+      pacientes.value[index] = { ...paciente }
+      emit('paciente-actualizado', pacientes.value[index])
+      mostrarMensajeExito('¡Paciente actualizado con éxito!')
     }
-    cancelarEdicion();
+    cancelarEdicion()
   } else {
-    // Lógica para registrar (crear)
     if (pacientes.value.some(p => p.cedula_paciente === paciente.cedula_paciente)) {
-      alert('Error: Ya existe un paciente con esa cédula.');
-      isSubmitting.value = false;
-      return;
+      alert('⚠️ Ya existe un paciente con esa cédula.')
+      isSubmitting.value = false
+      return
     }
-    const nuevoPaciente = { ...paciente };
-    emit('paciente-registrado', nuevoPaciente);
-    pacientes.value.push(nuevoPaciente);
-    mostrarMensajeExito('¡Paciente registrado con éxito!');
-    limpiarCampos();
+    pacientes.value.push({ ...paciente })
+    emit('paciente-registrado', paciente)
+    mostrarMensajeExito('¡Paciente registrado con éxito!')
+    limpiarCampos()
   }
 
-  isSubmitting.value = false;
-};
+  isSubmitting.value = false
+}
 
 const limpiarCampos = () => {
   Object.assign(paciente, {
@@ -201,50 +259,46 @@ const limpiarCampos = () => {
     seguro: '',
     estado: 'Activo',
     cargo: 'P'
-  });
-};
+  })
+}
 
 const mostrarMensajeExito = (mensaje) => {
-  successMessage.value = mensaje;
-  showSuccessMessage.value = true;
-  setTimeout(() => {
-    showSuccessMessage.value = false;
-  }, 3000);
-};
+  successMessage.value = mensaje
+  showSuccessMessage.value = true
+  setTimeout(() => (showSuccessMessage.value = false), 3000)
+}
 
-// --- NUEVOS MÉTODOS PARA CRUD ---
-const iniciarEdicion = (pacienteAEditar) => {
-  isEditing.value = true;
-  pacienteEditId.value = pacienteAEditar.cedula_paciente;
-  // Copiamos los datos al formulario reactivo
-  Object.assign(paciente, pacienteAEditar);
-  // Llevamos la vista al formulario
-  window.scrollTo(0, 0);
-};
+const iniciarEdicion = (p) => {
+  isEditing.value = true
+  pacienteEditId.value = p.cedula_paciente
+  Object.assign(paciente, p)
+  window.scrollTo(0, 0)
+}
 
 const cancelarEdicion = () => {
-  isEditing.value = false;
-  pacienteEditId.value = null;
-  limpiarCampos();
-};
+  isEditing.value = false
+  pacienteEditId.value = null
+  limpiarCampos()
+}
 
 const eliminarPaciente = (cedula) => {
-  // En una app real, aquí iría un modal de confirmación
-  if (confirm('¿Estás seguro de que deseas eliminar a este paciente?')) {
-    const index = pacientes.value.findIndex(p => p.cedula_paciente === cedula);
+  if (confirm('¿Estás seguro de eliminar este paciente?')) {
+    const index = pacientes.value.findIndex(p => p.cedula_paciente === cedula)
     if (index !== -1) {
-      const pacienteEliminado = pacientes.value.splice(index, 1);
-      emit('paciente-eliminado', pacienteEliminado[0]);
-      mostrarMensajeExito('Paciente eliminado correctamente.');
+      const eliminado = pacientes.value.splice(index, 1)
+      emit('paciente-eliminado', eliminado[0])
+      mostrarMensajeExito('Paciente eliminado correctamente.')
     }
   }
-};
+}
 
-// --- WATCHERS ---
-watch(pacientes, (newValue) => {
-  localStorage.setItem('pacientes', JSON.stringify(newValue));
-}, { deep: true });
+watch(pacientes, (nuevo) => {
+  localStorage.setItem('pacientes', JSON.stringify(nuevo))
+}, { deep: true })
 </script>
+
+
+
 
 <style scoped>
 /* Estilos heredados y consistentes */

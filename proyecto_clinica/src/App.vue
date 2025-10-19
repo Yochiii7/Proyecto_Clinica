@@ -16,6 +16,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <!-- Puedes agregar más rutas aquí a medida que desarrolles nuevos módulos -->
         <RouterLink to="/citas">Citas</RouterLink>
         <RouterLink to="/medicos">Médicos</RouterLink>
+        <RouterLink to="/servicios">Servicios</RouterLink> <!-- 👈 nuevo enlace -->
         <RouterLink to="/about">Acerca de</RouterLink>
       </nav>
     </header>
