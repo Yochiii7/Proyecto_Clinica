@@ -72,7 +72,7 @@
     </div>
   </div>
 
-  <!-- MODAL (para añadir o editar cita) -->
+  <!--MODAL-->
   <div v-if="showModal" class="custom-modal-overlay" @click.self="cerrarModal">
     <div class="custom-modal">
       <div class="modal-header">
@@ -138,7 +138,7 @@ const editando = ref(false)
 const currentAppointment = ref({})
 const appointments = ref([])
 
-// 📥 Cargar desde LocalStorage
+
 onMounted(() => {
   const saved = localStorage.getItem('appointments')
   if (saved) {
@@ -152,12 +152,12 @@ onMounted(() => {
   }
 })
 
-// 💾 Guardar cada vez que se actualiza la lista
+
 watch(appointments, (value) => {
   localStorage.setItem('appointments', JSON.stringify(value))
 }, { deep: true })
 
-// 🔹 Abrir modal para nueva cita
+
 function abrirModalNuevaCita() {
   currentAppointment.value = {
     patient: '',
@@ -171,16 +171,16 @@ function abrirModalNuevaCita() {
   showModal.value = true
 }
 
-// 🔹 Abrir modal para editar cita existente
+
 function editarCita(cita) {
-  currentAppointment.value = { ...cita } // Clonamos
+  currentAppointment.value = { ...cita } 
   editando.value = true
   showModal.value = true
 }
 
-// 🔹 Guardar cita (nueva o editada)
+
 function guardarCita() {
-  // impedir marcar como Atendido si la fecha es futura
+  
   if (currentAppointment.value.status && String(currentAppointment.value.status).toLowerCase().includes('atendid')) {
     if (!currentAppointment.value.date) {
       alert('La cita debe tener fecha antes de marcar como "Atendido".')
@@ -194,14 +194,14 @@ function guardarCita() {
       return
     }
   }
-  // recalcular estado según la fecha antes de guardar (mantener ajuste automático)
+  
   const computedStatus = getStatusForDisplay(currentAppointment.value.date, currentAppointment.value.status)
 
   if (editando.value) {
     const index = appointments.value.findIndex(a => a.id === currentAppointment.value.id)
     if (index !== -1) {
       const updated = { ...currentAppointment.value, status: computedStatus }
-      // usar splice para garantizar reactividad
+     
       appointments.value.splice(index, 1, updated)
     }
     alert('✅ Cita actualizada correctamente.')
@@ -214,13 +214,13 @@ function guardarCita() {
   cerrarModal()
 }
 
-// 🔹 Eliminar cita
+
 function eliminarCita(cita) {
   if (!confirm(`¿Eliminar la cita de "${cita.patient}" (${cita.date} ${cita.time})? Esta acción no se puede deshacer.`)) return
   const index = appointments.value.findIndex(a => a.id === cita.id)
   if (index !== -1) {
     appointments.value.splice(index, 1)
-    // si estamos editando la misma cita, cerrar modal
+   
     if (editando.value && currentAppointment.value.id === cita.id) {
       cerrarModal()
       editando.value = false
@@ -233,7 +233,7 @@ function cerrarModal() {
   showModal.value = false
 }
 
-// 🔹 Filtros
+
 const filterFrom = ref('')
 const filterTo = ref('')
 function inRange(dateStr, fromStr, toStr) {
@@ -248,7 +248,7 @@ function resetFilters() {
   filterTo.value = ''
 }
 
-// 🔹 Clases y formato
+
 function statusClass(status) {
   if (!status) return ''
   const s = status.toLowerCase()
@@ -257,10 +257,9 @@ function statusClass(status) {
   return ''
 }
 
-// Nueva función: determina el estado que se debe mostrar según la fecha
 function getStatusForDisplay(dateStr, status) {
   if (!dateStr) return status || ''
-  // comparar fechas sin tiempo
+
   const appt = new Date(dateStr + 'T00:00:00')
   const today = new Date()
   const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate())

@@ -11,7 +11,7 @@
 
   <div class="container-fluid p-4">
     <div class="row">
-      <!-- Calendario ocupa todo el ancho disponible dentro del contenedor -->
+      
       <div class="col-12">
         <div class="card shadow-sm calendar-card full-width">
           <div class="card-body">
@@ -46,7 +46,7 @@
                       {{ dia.dia !== null ? dia.dia : '' }}
                     </div>
 
-                    <!-- Mostrar eventos del día -->
+                
                     <div v-for="(ev, idx) in dia.events" :key="idx" class="event-item badge"
                          :class="statusBadge(ev.status)"
                          :title="ev.patient + ' — ' + ev.time"
@@ -81,7 +81,7 @@ function loadAppointments() {
   appointments.value = saved ? JSON.parse(saved) : []
 }
 
-// Cargar y escuchar actualizaciones
+
 onMounted(() => {
   loadAppointments()
   window.addEventListener('appointments-updated', loadAppointments)
@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('appointments-updated', loadAppointments)
 })
 
-// Nueva función: determina el estado visible según la fecha
+
 function getStatusForDisplay(dateStr, status) {
   if (!dateStr) return status || ''
   const appt = new Date(dateStr + 'T00:00:00')
@@ -129,7 +129,7 @@ const semanasDelMes = computed(() => {
     dias.push({ dia: i, esMesActual: false, events: [] })
   }
 
-  // Adjuntar eventos desde appointments (formato YYYY-MM-DD)
+
   const yearStr = String(year)
   const monthStr = String(month + 1).padStart(2, '0')
   dias.forEach(day => {
@@ -175,32 +175,32 @@ function isToday(day) {
 </script>
 
 <style scoped>
-/* Ajustes para que el calendario sea un poco más compacto */
+
 .calendar-card {
   width: 100%;
-  max-width: 1000px; /* limitar ancho máximo para que no ocupe toda la pantalla */
+  max-width: 1000px; 
   margin: 0 auto;
   padding: 0.5rem;
 }
 
-/* Tabla más compacta */
+
 .calendar-table {
   table-layout: fixed;
   width: 100%;
-  font-size: 0.95rem; /* texto ligeramente más pequeño */
+  font-size: 0.95rem; 
 }
 
 .calendar-table th, .calendar-table td {
-  padding: 0.6rem; /* menos padding en celdas */
+  padding: 0.6rem; 
 }
 
 .cell-height {
-  /* Altura reducida para ocupar menos espacio vertical */
+ 
   min-height: 160px;
   vertical-align: top;
 }
 
-/* Día y eventos con tamaño reducido */
+
 .day-number {
   font-size: 1.1rem;
 }
@@ -218,7 +218,7 @@ function isToday(day) {
   border-radius: 6px;
 }
 
-/* Ajustes responsivos: reducir aún más en móviles */
+
 @media (max-width: 991px) {
   .cell-height { min-height: 100px; }
   .calendar-table { font-size: 0.9rem; }
