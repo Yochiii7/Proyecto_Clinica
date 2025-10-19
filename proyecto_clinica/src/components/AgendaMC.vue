@@ -1,4 +1,8 @@
 <template>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/src/style.css">
+
   <header class="d-flex align-items-center mb-3">
     <h2 class="mb-0">Agenda Médica</h2>
     <button type="button" class="btn btn-primary ms-4" @click="abrirModalNuevaCita">Añadir consulta</button>
