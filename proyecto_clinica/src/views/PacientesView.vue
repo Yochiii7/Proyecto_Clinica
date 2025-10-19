@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <h1>Registro de Pacientes 🏥</h1>
     <FormPaciente />
   </div>
 </template>
@@ -15,6 +14,7 @@ export default {
 
 <style scoped>
 .container {
+  color: #333;
   padding: 20px;
 }
 </style>
