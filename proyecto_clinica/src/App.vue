@@ -7,29 +7,44 @@ import { RouterLink, RouterView } from 'vue-router'
     <header class="main-header">
       <div class="logo-container">
         <!-- He reemplazado el logo de Vue por un SVG simple de una cruz médica -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon"><path d="M12 5v14M5 12h14"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
         <span class="clinic-name">Clínica Bienestar</span>
       </div>
+
       <nav class="main-nav">
         <RouterLink to="/">Inicio</RouterLink>
         <RouterLink to="/pacientes">Registro de Pacientes</RouterLink>
-        <!-- Puedes agregar más rutas aquí a medida que desarrolles nuevos módulos -->
         <RouterLink to="/citas">Citas</RouterLink>
+        <RouterLink to="/agenda">Agenda Médica</RouterLink>
         <RouterLink to="/medicos">Médicos</RouterLink>
-        <RouterLink to="/servicios">Servicios</RouterLink> <!-- 👈 nuevo enlace -->
+        <RouterLink to="/servicios">Servicios</RouterLink>
+        <RouterLink to="/doctores">Doctores</RouterLink>
+        <RouterLink to="/calendario">Calendario</RouterLink>
         <RouterLink to="/about">Acerca de</RouterLink>
       </nav>
     </header>
 
     <main class="content-view">
-      <!-- El contenido de cada ruta se renderizará aquí -->
+      <!-- Aquí se renderizan las vistas del router -->
       <RouterView />
+
+      <!-- 🔹 Botones rápidos del Dashboard -->
+      <div class="dashboard-buttons">
+        <h2>Panel de Navegación Rápida</h2>
+        <div class="button-grid">
+          <RouterLink to="/agenda" class="dash-btn">📅 Ir a Agenda Médica</RouterLink>
+          <RouterLink to="/doctores" class="dash-btn">👨‍⚕️ Ver Doctores</RouterLink>
+          <RouterLink to="/calendario" class="dash-btn">🗓️ Abrir Calendario</RouterLink>
+        </div>
+      </div>
     </main>
   </div>
 </template>
 
 <style>
-/* Estilos Globales */
+/* 🎨 Estilos Globales */
 :root {
   --primary-color: #007bff; /* Azul primario */
   --secondary-color: #6c757d; /* Gris secundario */
@@ -54,7 +69,7 @@ body {
   min-height: 100vh;
 }
 
-/* Estilos del Header y Navegación */
+/* 🧭 Estilos del Header y Navegación */
 .main-header {
   background-color: var(--header-background);
   box-shadow: var(--shadow);
@@ -70,7 +85,7 @@ body {
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* Espacio entre el logo y el nombre */
+  gap: 0.75rem;
 }
 
 .logo-icon {
@@ -85,7 +100,8 @@ body {
 
 .main-nav {
   display: flex;
-  gap: 1.5rem; /* Espacio entre los enlaces de navegación */
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 .main-nav a {
@@ -116,26 +132,77 @@ body {
   width: 100%;
 }
 
-/* Estilo para el enlace activo */
+/* Enlace activo */
 .main-nav a.router-link-exact-active {
   color: var(--primary-color);
   font-weight: 700;
 }
-
 .main-nav a.router-link-exact-active::after {
   width: 100%;
 }
 
-
-/* Contenido Principal */
+/* 📦 Contenido principal */
 .content-view {
   flex-grow: 1;
   padding: 2rem;
-  /* Centra el contenido del 'RouterView' si es necesario */
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* 🧩 Dashboard de botones */
+.dashboard-buttons {
+  margin-top: 2rem;
+  background-color: white;
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.dashboard-buttons h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+}
+
+.button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.dash-btn {
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s;
+  display: inline-block;
+}
+
+.dash-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .main-nav {
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+  .button-grid {
+    flex-direction: column;
+  }
+  .dash-btn {
+    width: 100%;
+  }
 }
 </style>
