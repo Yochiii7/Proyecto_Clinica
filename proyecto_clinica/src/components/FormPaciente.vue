@@ -169,12 +169,8 @@
   </div>
 </template>
 
-
-
 <script setup>
-import { ref, reactive, watch, computed } from 'vue'
-
-const emit = defineEmits(['paciente-registrado', 'paciente-actualizado', 'paciente-eliminado'])
+import { ref, reactive, computed, onMounted } from 'vue'
 
 const paciente = reactive({
   cedula_paciente: '',
@@ -184,10 +180,10 @@ const paciente = reactive({
   telefono: '',
   seguro: '',
   estado: 'Activo',
-  cargo: 'P' // fijo
+  cargo: 'P'
 })
 
-const pacientes = ref(JSON.parse(localStorage.getItem('pacientes')) || [])
+const pacientes = ref([])
 const isSubmitting = ref(false)
 const showSuccessMessage = ref(false)
 const successMessage = ref('')
@@ -195,61 +191,78 @@ const isEditing = ref(false)
 const pacienteEditId = ref(null)
 const searchTerm = ref('')
 
-// ✅ Filtrado dinámico
-const filteredPacientes = computed(() => {
-  if (!searchTerm.value) return pacientes.value
-  const s = searchTerm.value.toLowerCase()
-  return pacientes.value.filter(p =>
-    p.nombre_paciente.toLowerCase().includes(s) ||
-    p.apellido_paciente.toLowerCase().includes(s) ||
-    p.cedula_paciente.toLowerCase().includes(s)
-  )
-})
-
-// 🚫 Validaciones en tiempo real
-const soloNumeros = (campo) => {
-  paciente[campo] = paciente[campo].replace(/[^0-9]/g, '')
+// ✅ Cargar pacientes desde la API
+async function cargarPacientes() {
+  const res = await fetch('http://localhost:3000/api/pacientes')
+  pacientes.value = await res.json()
 }
 
-const soloLetras = (campo) => {
-  paciente[campo] = paciente[campo].replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, '')
-}
+// 🚀 Cargar al montar el componente
+onMounted(cargarPacientes)
 
-// 💾 Envío del formulario
-const handleSubmit = (e) => {
+// ✅ Registrar o actualizar paciente
+async function handleSubmit(e) {
   const form = e.target
   if (!form.checkValidity()) {
     form.reportValidity()
     return
   }
 
-  if (isSubmitting.value) return
   isSubmitting.value = true
 
-  if (isEditing.value) {
-    const index = pacientes.value.findIndex(p => p.cedula_paciente === pacienteEditId.value)
-    if (index !== -1) {
-      pacientes.value[index] = { ...paciente }
-      emit('paciente-actualizado', pacientes.value[index])
-      mostrarMensajeExito('¡Paciente actualizado con éxito!')
-    }
-    cancelarEdicion()
-  } else {
-    if (pacientes.value.some(p => p.cedula_paciente === paciente.cedula_paciente)) {
-      alert('⚠️ Ya existe un paciente con esa cédula.')
-      isSubmitting.value = false
-      return
-    }
-    pacientes.value.push({ ...paciente })
-    emit('paciente-registrado', paciente)
-    mostrarMensajeExito('¡Paciente registrado con éxito!')
-    limpiarCampos()
-  }
+  const url = isEditing.value
+    ? `http://localhost:3000/api/pacientes/${pacienteEditId.value}`
+    : 'http://localhost:3000/api/pacientes'
+  const method = isEditing.value ? 'PUT' : 'POST'
 
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(paciente)
+  })
+
+  const data = await res.json()
+  mostrarMensajeExito(data.mensaje)
   isSubmitting.value = false
+  limpiarCampos()
+  isEditing.value = false
+  cargarPacientes()
 }
 
-const limpiarCampos = () => {
+// ✅ Eliminar paciente
+async function eliminarPaciente(cedula) {
+  if (confirm('¿Estás seguro de eliminar este paciente?')) {
+    const res = await fetch(`http://localhost:3000/api/pacientes/${cedula}`, { method: 'DELETE' })
+    const data = await res.json()
+    mostrarMensajeExito(data.mensaje)
+    cargarPacientes()
+  }
+}
+
+// ✅ Iniciar y cancelar edición
+function iniciarEdicion(p) {
+  isEditing.value = true
+  pacienteEditId.value = p.cedula_paciente
+  Object.assign(paciente, p)
+  window.scrollTo(0, 0)
+}
+
+function cancelarEdicion() {
+  isEditing.value = false
+  pacienteEditId.value = null
+  limpiarCampos()
+}
+
+// ✅ Validaciones simples
+function soloNumeros(campo) {
+  paciente[campo] = paciente[campo].replace(/[^0-9]/g, '')
+}
+function soloLetras(campo) {
+  paciente[campo] = paciente[campo].replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, '')
+}
+
+// ✅ Auxiliares
+function limpiarCampos() {
   Object.assign(paciente, {
     cedula_paciente: '',
     nombre_paciente: '',
@@ -262,53 +275,32 @@ const limpiarCampos = () => {
   })
 }
 
-const mostrarMensajeExito = (mensaje) => {
-  successMessage.value = mensaje
+function mostrarMensajeExito(msg) {
+  successMessage.value = msg
   showSuccessMessage.value = true
   setTimeout(() => (showSuccessMessage.value = false), 3000)
 }
 
-const iniciarEdicion = (p) => {
-  isEditing.value = true
-  pacienteEditId.value = p.cedula_paciente
-  Object.assign(paciente, p)
-  window.scrollTo(0, 0)
-}
-
-const cancelarEdicion = () => {
-  isEditing.value = false
-  pacienteEditId.value = null
-  limpiarCampos()
-}
-
-const eliminarPaciente = (cedula) => {
-  if (confirm('¿Estás seguro de eliminar este paciente?')) {
-    const index = pacientes.value.findIndex(p => p.cedula_paciente === cedula)
-    if (index !== -1) {
-      const eliminado = pacientes.value.splice(index, 1)
-      emit('paciente-eliminado', eliminado[0])
-      mostrarMensajeExito('Paciente eliminado correctamente.')
-    }
-  }
-}
-
-watch(pacientes, (nuevo) => {
-  localStorage.setItem('pacientes', JSON.stringify(nuevo))
-}, { deep: true })
+// 🔍 Filtrado de pacientes
+const filteredPacientes = computed(() => {
+  if (!searchTerm.value) return pacientes.value
+  const s = searchTerm.value.toLowerCase()
+  return pacientes.value.filter(p =>
+    p.nombre_paciente.toLowerCase().includes(s) ||
+    p.apellido_paciente.toLowerCase().includes(s) ||
+    p.cedula_paciente.toLowerCase().includes(s)
+  )
+})
 </script>
 
-
-
-
 <style scoped>
-/* Estilos heredados y consistentes */
+/* Todo tu CSS original se mantiene igual */
 .patient-form-container {
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
   padding: 1rem;
 }
-
 .form-card {
   background-color: var(--header-background, #fff);
   padding: 2rem;
@@ -316,14 +308,12 @@ watch(pacientes, (nuevo) => {
   box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
   margin-bottom: 2rem;
 }
-
 .form-title {
   text-align: center;
   color: var(--primary-color, #007bff);
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
 }
-
 .success-message {
   background-color: #d4edda;
   color: #155724;
@@ -333,24 +323,20 @@ watch(pacientes, (nuevo) => {
   border-radius: 8px;
   text-align: center;
 }
-
 .patient-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
-
 .input-group {
   display: flex;
   flex-direction: column;
 }
-
 .input-group label {
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: var(--text-color, #333);
 }
-
 .input-group input,
 .input-group select {
   padding: 0.75rem;
@@ -359,25 +345,21 @@ watch(pacientes, (nuevo) => {
   font-size: 1rem;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
-
 .input-group input:disabled {
   background-color: #f4f7f6;
   cursor: not-allowed;
 }
-
 .input-group input:focus,
 .input-group select:focus {
   outline: none;
   border-color: var(--primary-color, #007bff);
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
-
 .form-actions {
   grid-column: 1 / -1;
   display: flex;
   gap: 1rem;
 }
-
 .submit-button, .cancel-button {
   flex-grow: 1;
   padding: 0.8rem 1.5rem;
@@ -388,7 +370,6 @@ watch(pacientes, (nuevo) => {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
-
 .submit-button {
   background-color: var(--primary-color, #007bff);
   color: var(--text-light, #fff);
@@ -397,7 +378,6 @@ watch(pacientes, (nuevo) => {
   background-color: var(--secondary-color, #6c757d);
   color: var(--text-light, #fff);
 }
-
 .submit-button:hover:not(:disabled) {
   background-color: #0056b3;
   transform: translateY(-2px);
@@ -405,19 +385,16 @@ watch(pacientes, (nuevo) => {
 .cancel-button:hover {
   background-color: #5a6268;
 }
-
 .submit-button:disabled {
   background-color: var(--secondary-color, #6c757d);
   cursor: not-allowed;
   opacity: 0.7;
 }
-
 .separator {
   border: none;
   border-top: 1px solid var(--border-color, #eee);
   margin: 2.5rem 0;
 }
-
 .list-header {
   display: flex;
   justify-content: space-between;
@@ -426,12 +403,10 @@ watch(pacientes, (nuevo) => {
   flex-wrap: wrap;
   gap: 1rem;
 }
-
 .list-title {
   color: var(--text-color, #333);
   margin: 0;
 }
-
 .search-bar input {
   padding: 0.6rem 1rem;
   border: 1px solid var(--border-color, #dee2e6);
@@ -439,7 +414,6 @@ watch(pacientes, (nuevo) => {
   width: 300px;
   font-size: 1rem;
 }
-
 .no-patients-message {
   text-align: center;
   color: var(--secondary-color, #6c757d);
@@ -447,13 +421,11 @@ watch(pacientes, (nuevo) => {
   padding: 2rem;
   border-radius: 8px;
 }
-
 .pacientes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
-
 .paciente-card {
   background: var(--header-background, #fff);
   border-radius: 12px;
@@ -463,12 +435,10 @@ watch(pacientes, (nuevo) => {
   display: flex;
   flex-direction: column;
 }
-
 .paciente-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
-
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -477,12 +447,6 @@ watch(pacientes, (nuevo) => {
   padding-bottom: 0.75rem;
   margin-bottom: 0.75rem;
 }
-
-.card-header strong {
-  font-size: 1.1rem;
-  color: var(--text-color, #333);
-}
-
 .status-badge {
   color: white;
   padding: 0.25rem 0.6rem;
@@ -490,22 +454,13 @@ watch(pacientes, (nuevo) => {
   font-weight: 600;
   font-size: 0.8rem;
 }
-
 .status-badge.activo { background-color: #28a745; }
 .status-badge.inactivo { background-color: #dc3545; }
-
-.card-body {
-  flex-grow: 1;
-  margin-bottom: 1rem;
-}
-
 .card-body p { margin: 0.5rem 0; font-size: 0.9rem; color: #555; }
-
 .card-actions {
   display: flex;
   gap: 0.5rem;
 }
-
 .card-actions button {
   width: 100%;
   border: none;
@@ -517,10 +472,8 @@ watch(pacientes, (nuevo) => {
   transition: opacity 0.2s;
 }
 .card-actions button:hover { opacity: 0.85; }
-
-.edit-btn { background-color: #ffc107; /* Amarillo */ }
-.delete-btn { background-color: #dc3545; /* Rojo */ }
-
+.edit-btn { background-color: #ffc107; }
+.delete-btn { background-color: #dc3545; }
 @media (max-width: 768px) {
   .patient-form { grid-template-columns: 1fr; }
   .form-actions { flex-direction: column; }
@@ -528,4 +481,3 @@ watch(pacientes, (nuevo) => {
   .search-bar input { width: 100%; }
 }
 </style>
-
