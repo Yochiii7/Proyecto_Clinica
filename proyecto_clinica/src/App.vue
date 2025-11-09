@@ -27,7 +27,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/pacientes" class="nav-item">
           <span class="icon">🧑‍🤝‍🧑</span> Pacientes
         </RouterLink>
-        <RouterLink to="/medicos" class="nav-item">
+        <RouterLink to="/doctores" class="nav-item">
           <span class="icon">👨‍⚕️</span> Médicos
         </RouterLink>
         <RouterLink to="/servicios" class="nav-item">

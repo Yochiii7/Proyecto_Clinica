@@ -1,22 +1,27 @@
 <template>
   <div class="page-container">
-    <h1 class="page-title">🧑‍⚕️ Registro y Gestión de Doctores</h1>
+    <h1 class="page-title">🩺 Registro y Gestión de Servicios</h1>
+    
     <div class="main-card">
-      <FormDoctor />
+      <FormServicio />
     </div>
   </div>
 </template>
 
 <script>
-import FormDoctor from '../components/FormDoctor.vue'
+// Importamos el nuevo componente que crearemos
+import FormServicio from '../components/FormServicio.vue'
 
 export default {
-  components: { FormDoctor }
+  components: { FormServicio }
 }
 </script>
 
 <style scoped>
-/* Estilos idénticos a PacientesView.vue */
+/*
+ * Usamos exactamente los mismos estilos de PacientesView.vue
+ * para mantener la consistencia visual.
+*/
 .page-container {
   max-width: 800px;
   margin: 0 auto;
