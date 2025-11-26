@@ -3,10 +3,13 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./config/db');
 const pacientesRoutes = require('./routes/pacientes');
+const facturasRoutes = require('./routes/facturas');
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/api/facturas', facturasRoutes);
 
 app.use('/api/pacientes', pacientesRoutes);
 
