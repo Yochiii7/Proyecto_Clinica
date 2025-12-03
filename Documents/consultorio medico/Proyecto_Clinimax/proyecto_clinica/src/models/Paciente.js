@@ -1,46 +1,50 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/db.js';
+const { DataTypes } = require('sequelize');
+const db = require('../config/db');
 
-export const Paciente = sequelize.define('Paciente', {
+const Paciente = db.define('pacientes', {
   cod_paciente: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    primaryKey: true
   },
-  dni_paciente: {
+  cedula_paciente: {
     type: DataTypes.CHAR(8),
-    allowNull: true
+    allowNull: false,
+    unique: true
   },
   nombre_paciente: {
     type: DataTypes.STRING(50),
-    allowNull: true
+    allowNull: false
   },
   apellido_paciente: {
     type: DataTypes.STRING(50),
-    allowNull: true
+    allowNull: false
   },
   seguro: {
-    type: DataTypes.CHAR(10),
+    type: DataTypes.STRING(10),
     allowNull: true
   },
   telefono: {
-    type: DataTypes.CHAR(15),
+    type: DataTypes.STRING(13),
     allowNull: true
   },
   sexo: {
-    type: DataTypes.CHAR(15),
-    allowNull: true
+    type: DataTypes.STRING(15),
+    allowNull: false
   },
   cargo: {
     type: DataTypes.CHAR(1),
-    allowNull: true
+    allowNull: false,
+    defaultValue: 'P'
   },
   estado: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: false,
+    defaultValue: 'Activo'
   },
   fecha_creacion: {
     type: DataTypes.DATE,
+    allowNull: false,
     defaultValue: DataTypes.NOW
   },
   id_usuario: {
@@ -52,7 +56,4 @@ export const Paciente = sequelize.define('Paciente', {
   timestamps: false
 });
 
-// Agregar asociaciones
-Paciente.associate = (models) => {
-  Paciente.hasMany(models.Cita, { foreignKey: 'cod_paciente' });
-};
+module.exports = Paciente;
