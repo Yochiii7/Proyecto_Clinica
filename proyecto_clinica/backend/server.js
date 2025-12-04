@@ -3,36 +3,49 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./config/db');
 
-// --- IMPORTAR RUTAS ---
+// --- 1. IMPORTAR RUTAS ---
+const authRoutes = require('./routes/auth'); // Ruta de Login/Registro
 const pacientesRoutes = require('./routes/pacientes');
 const facturasRoutes = require('./routes/facturas');
+const servicioRoutes = require('./routes/servicios');
+const doctorRoutes = require('./routes/doctores');
 
-
-const servicioRoutes = require('./routes/servicios'); 
-const doctorRoutes = require('./routes/doctores'); // Asumo que el archivo se llama 'doctores.js'
-
+// --- 2. CONFIGURACIÓN INICIAL ---
 const app = express();
-app.use(cors());
-app.use(express.json());
-app.use('/api/facturas', facturasRoutes);
-
-// --- USAR RUTAS ---
-app.use('/api/pacientes', pacientesRoutes);
-
-app.use('/api/servicios', servicioRoutes);
-app.use('/api/doctores', doctorRoutes); 
-
-
 const PORT = process.env.PORT || 3000;
 
+// Middlewares globales
+app.use(cors()); // Permitir conexiones desde Vue
+app.use(express.json()); // Permitir leer JSON en los request
+
+// --- 3. DEFINIR ENDPOINTS (USAR RUTAS) ---
+
+// Autenticación (Login y Registro)
+app.use('/api/auth', authRoutes);
+
+// Módulos del sistema
+app.use('/api/pacientes', pacientesRoutes);
+app.use('/api/facturas', facturasRoutes);
+app.use('/api/servicios', servicioRoutes);
+app.use('/api/doctores', doctorRoutes);
+
+// --- 4. INICIAR SERVIDOR Y BASE DE DATOS ---
 async function start() {
   try {
+    // Probar conexión
     await db.authenticate();
     console.log('✅ Conectado a la base de datos (Sequelize)');
+
+    // Sincronizar modelos (alter: false para no borrar datos existentes por error)
     await db.sync({ alter: false });
-    app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
+
+    // Levantar servidor Express
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    });
+
   } catch (error) {
-    console.error('❌ Error al conectar con la base de datos:', error);
+    console.error('❌ Error crítico al iniciar el servidor:', error);
   }
 }
 
