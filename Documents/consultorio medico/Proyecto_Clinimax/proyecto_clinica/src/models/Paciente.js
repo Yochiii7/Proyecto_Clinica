@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
-const db = require('../config/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js'; // Asegúrate de que la ruta sea correcta y tenga .js
 
-const Paciente = db.define('pacientes', {
+const Paciente = sequelize.define('pacientes', {
   cod_paciente: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -56,4 +56,4 @@ const Paciente = db.define('pacientes', {
   timestamps: false
 });
 
-module.exports = Paciente;
+export default Paciente;

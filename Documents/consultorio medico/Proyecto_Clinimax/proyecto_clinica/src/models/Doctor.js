@@ -1,63 +1,73 @@
-const { DataTypes } = require('sequelize');
-const db = require('../config/db'); // La conexión a tu BD
+/* eslint-env node */
 
-const Doctor = db.define('doctores', {
-  cod_doctor: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
-  },
-  dni_doctor: {
-    type: DataTypes.CHAR(8),
-    allowNull: false
-    // Si es único, añade: unique: true
-  },
-  nombre_doctor: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  apellido_doctor: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  sexo: {
-    type: DataTypes.CHAR(15),
-    allowNull: false
-  },
-  telefono: {
-    type: DataTypes.CHAR(13),
-    allowNull: false
-  },
-  fecha_nacimiento: {
-    type: DataTypes.DATEONLY, // Importante: DATEONLY para 'date' (sin hora)
-    allowNull: false
-  },
-  correo: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-    // Si es único, añade: unique: true
-  },
-  nacionalidad: {
-    type: DataTypes.STRING(35),
-    allowNull: false
-  },
-  estado: {
-    type: DataTypes.CHAR(15),
-    allowNull: false
-  },
-  fecha_creacion: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  id_usuario: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-    // Aquí iría la foreign key a usuarios si la defines
-  }
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
+
+const Doctor = sequelize.define('pacientes', {
+    cod_doctor: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    dni_doctor: {
+        type: DataTypes.CHAR(8),
+        allowNull: false,
+        unique: true
+    },
+    nombre_doctor: {
+        type: DataTypes.STRING(50),
+        allowNull: false
+    },
+    apellido_doctor: {
+        type: DataTypes.STRING(50),
+        allowNull: false
+    },
+    sexo: {
+        type: DataTypes.CHAR(15),
+        allowNull: true
+    },
+    telefono: {
+        type: DataTypes.CHAR(13),
+        allowNull: true
+    },
+    fecha_nacimiento: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    },
+    correo: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        unique: true
+    },
+    nacionalidad: {
+        type: DataTypes.STRING(35),
+        allowNull: false,
+        defaultValue: 'Venezolano(a)'
+    },
+    estado: {
+        type: DataTypes.CHAR(15),
+        allowNull: false,
+        defaultValue: 'Activo'
+    },
+    fecha_creacion: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    },
+    id_usuario: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 }, {
-  tableName: 'doctores',
-  timestamps: false // Usamos 'fecha_creacion' manualmente
+    tableName: 'doctores',
+    timestamps: false // Si tienes fecha_creacion manual, desactiva timestamps automáticos
 });
 
-module.exports = Doctor;
+// Asociación (Para cuando integres con Citas)
+Doctor.associate = (models) => {
+    if (models.Cita) {
+        Doctor.hasMany(models.Cita, { foreignKey: 'cod_doctor' });
+    }
+};
+
+export default Doctor;

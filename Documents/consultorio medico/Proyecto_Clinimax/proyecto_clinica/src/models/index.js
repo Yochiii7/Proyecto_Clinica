@@ -1,6 +1,6 @@
 import { sequelize } from '../config/db.js';
-import { Paciente } from './paciente.model.js';
-import { Doctor } from './doctor.model.js';
+import Paciente from './Paciente.js';
+import Doctor from './Doctor.js';
 import { Especialidad } from './especialidad.model.js';
 import { Cita } from './cita.model.js';
 import { DoctorEspecialidad } from './doctorEspecialidad.model.js';
