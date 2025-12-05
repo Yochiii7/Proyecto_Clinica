@@ -1,24 +1,19 @@
+<script setup>
+import DoctoresForm from '../components/DoctoresForm.vue'
+</script>
+
 <template>
   <div class="page-container">
-    <h1 class="page-title">🧑‍⚕️ Registro y Gestión de Doctores</h1>
+    <h1 class="page-title">👨‍⚕️ Gestión de Médicos y Especialistas</h1>
     <div class="main-card">
-      <FormDoctor />
+      <DoctoresForm />
     </div>
   </div>
 </template>
 
-<script>
-import FormDoctor from '../components/FormDoctor.vue'
-
-export default {
-  components: { FormDoctor }
-}
-</script>
-
 <style scoped>
-/* Estilos idénticos a PacientesView.vue */
 .page-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -32,7 +27,7 @@ export default {
 
 .main-card {
   background-color: white;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-light);
 }

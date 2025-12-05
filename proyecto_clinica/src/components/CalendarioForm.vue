@@ -5,7 +5,7 @@
 
   <header class="d-flex align-items-center mb-3">
     <h2 class="mb-0">Calendario</h2>
-    <button type="button" class="btn btn-primary ms-4" @click="router.push('/')">Ir a Agenda</button>
+    <button type="button" class="btn btn-primary ms-4" @click="router.push('/AgendaMC')">Ir a Agenda</button>
     <button @click="router.push('/Doctores')" type="button" class="btn btn-primary ms-4" style="background-color: #5884c7;">Doctores</button>
   </header>
 
@@ -68,6 +68,10 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+
+// API base (same default used elsewhere)
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
 const router = useRouter()
 
@@ -76,28 +80,53 @@ const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const diaHoyGlobal = new Date()
 const appointments = ref([])
 
-function loadAppointments() {
-  const saved = localStorage.getItem('appointments')
-  appointments.value = saved ? JSON.parse(saved) : []
+async function loadAppointments() {
+  try {
+    const res = await axios.get(`${API_BASE}/api/citas`)
+    if (Array.isArray(res.data)) {
+      appointments.value = res.data.map(c => ({
+        date: c.fecha || c.date || '',
+        time: c.hora || c.time || '',
+        patient: c.paciente || c.patient || '',
+        status: c.estado || c.status || ''
+      }))
+    } else {
+      appointments.value = []
+    }
+  } catch (err) {
+    console.error('Error cargando citas en calendario:', err)
+    appointments.value = []
+  }
 }
 
 
 onMounted(() => {
   loadAppointments()
-  window.addEventListener('appointments-updated', loadAppointments)
+  // Escuchamos eventos globales cuando otras vistas modifican citas
+  window.addEventListener('appointments-changed', loadAppointments)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('appointments-updated', loadAppointments)
+  window.removeEventListener('appointments-changed', loadAppointments)
 })
 
 
-function getStatusForDisplay(dateStr, status) {
+function getStatusForDisplay(dateStr, status, timeStr = '00:00:00') {
   if (!dateStr) return status || ''
-  const appt = new Date(dateStr + 'T00:00:00')
-  const today = new Date()
-  const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  if (appt > todayMid) return 'Por atender'
-  return status || ''
+
+  let hora = String(timeStr || '').trim()
+  if (!hora) hora = '00:00:00'
+  if (hora.split(':').length === 2) hora = hora + ':00'
+
+  const appt = new Date(`${dateStr}T${hora}`)
+  const now = new Date()
+
+  if (appt > now) return 'Por atender'
+
+  // Si ya pasó -> Atendido salvo que esté cancelada
+  const s = String(status || '').trim()
+  const code = s.toUpperCase()
+  if (code === 'C' || String(status).toLowerCase().includes('cancel')) return 'Cancelado'
+  return 'Atendido'
 }
 
 const anioActual = computed(() => fechaReferencia.value.getFullYear())
@@ -140,7 +169,7 @@ const semanasDelMes = computed(() => {
     day.events = dayEvents.map(e => ({
       patient: e.patient,
       time: e.time,
-      status: getStatusForDisplay(e.date, e.status)
+      status: getStatusForDisplay(e.date, e.status, e.time)
     }))
   })
 
@@ -160,9 +189,10 @@ function mesSiguiente() {
 
 function statusBadge(status) {
   if (!status) return 'bg-secondary'
-  const s = status.toLowerCase()
-  if (s.includes('atendido')) return 'bg-success'
-  if (s.includes('por')) return 'bg-warning text-dark'
+  const s = String(status).toLowerCase()
+  if (s === 'a' || s.includes('atendido')) return 'bg-success'
+  if (s === 'p' || s.includes('por')) return 'bg-warning text-dark'
+  if (s === 'c' || s.includes('cancel')) return 'bg-danger text-light'
   return 'bg-info'
 }
 

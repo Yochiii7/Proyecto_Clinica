@@ -2,7 +2,7 @@
   <div class="page-container">
     <h1 class="page-title">ℹ️ Acerca de la Aplicación y la Clínica</h1>
     <div class="main-card about-content">
-      <p>Esta es la página de información. Aquí puedes describir la misión de la Clínica Bienestar, el equipo de desarrollo, la versión del sistema, o cualquier otra información relevante.</p>
+      <p>Esta es la página de información. Aquí puedes describir la misión de la Clínica CLinimax, el equipo de desarrollo, la versión del sistema, o cualquier otra información relevante.</p>
       <p>El objetivo es proporcionar una herramienta robusta y organizada para la gestión de servicios médicos y pacientes.</p>
       <p class="version-info">Versión 1.0.0 - Desarrollado con Vue 3 y CSS moderno.</p>
     </div>
