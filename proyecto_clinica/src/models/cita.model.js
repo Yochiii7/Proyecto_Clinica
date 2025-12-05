@@ -39,10 +39,3 @@ export const Cita = sequelize.define("cita", {
   tableName: "cita",
   timestamps: false
 });
-
-// Agregar asociaciones
-Cita.associate = (models) => {
-  Cita.belongsTo(models.Paciente, { foreignKey: 'cod_paciente' });
-  Cita.belongsTo(models.Doctor, { foreignKey: 'cod_doctor' });
-  Cita.belongsTo(models.Especialidad, { foreignKey: 'cod_especialidad' });
-};

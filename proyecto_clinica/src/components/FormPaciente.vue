@@ -223,12 +223,6 @@ async function handleSubmit(e) {
 
   const data = await res.json()
   mostrarMensajeExito(data.mensaje)
-  // Emitimos evento global para que otras partes (p. ej Agenda/Calendario) refresquen datos
-  if (isEditing.value) {
-    window.dispatchEvent(new CustomEvent('paciente-actualizado', { detail: { cedula: pacienteEditId.value } }))
-  } else {
-    window.dispatchEvent(new CustomEvent('paciente-registrado', { detail: { cedula: data?.paciente?.cod_paciente } }))
-  }
   isSubmitting.value = false
   limpiarCampos()
   isEditing.value = false
@@ -241,8 +235,6 @@ async function eliminarPaciente(cedula) {
     const res = await fetch(`http://localhost:3000/api/pacientes/${cedula}`, { method: 'DELETE' })
     const data = await res.json()
     mostrarMensajeExito(data.mensaje)
-    // Emitir evento global para notificar eliminación — útil para que la agenda/calendario refresquen y borren citas
-    window.dispatchEvent(new CustomEvent('paciente-eliminado', { detail: { cedula } }))
     cargarPacientes()
   }
 }

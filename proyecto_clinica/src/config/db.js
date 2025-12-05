@@ -1,39 +1,17 @@
-import { Sequelize } from 'sequelize';
-import mysql2 from 'mysql2';
+import { Sequelize } from "sequelize";
 
-export const sequelize = new Sequelize(
-  'proyecto_clinica',
-  'root',
-  '',
-  {
-    host: 'localhost',
-    dialect: 'mysql',
-    dialectModule: mysql2,
-    logging: console.log,
-    port: 3306 
-  }
-);
+export const sequelize = new Sequelize("proyecto_clinica", "root", "", {
+  host: "127.0.0.1",   // o el host que aparece en Heidi
+  port: 3306,          // usa el mismo puerto que ves en Heidi
+  dialect: "mysql"
+});
 
-export const conectarDB = async () => {
+// Probar conexión
+(async () => {
   try {
-    console.log('🟡 Intentando conectar a la BD...');
-    console.log('📋 Configuración:', {
-      database: 'proyecto_clinica',
-      host: 'localhost',
-      port: 3306,
-      user: 'root'
-    });
-    
     await sequelize.authenticate();
-    console.log('✅ Conexión a la BD establecida correctamente');
-    return true;
+    console.log("✅ Conectado a la base de datos MySQL");
   } catch (error) {
-    console.error('❌ ERROR DETALLADO de conexión a la BD:');
-    console.error('   - Mensaje:', error.message);
-    console.error('   - Código:', error.code);
-    console.error('   - Número de error:', error.errno);
-    console.error('   - SQL State:', error.sqlState);
-    
-    return false;
+    console.error("❌ Error al conectar a la base de datos:", error);
   }
-};
+})();

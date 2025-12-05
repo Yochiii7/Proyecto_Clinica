@@ -1,58 +1,47 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+// Función para cerrar sesión
+const logout = () => {
+  localStorage.removeItem('token');
+  router.push('/login');
+}
 </script>
 
 <template>
-  <div id="app-layout">
-    <aside class="sidebar-nav">
-      <div class="logo-container">
-        
-        <span class="clinic-name">CLinimax</span>
+  <div v-if="route.meta.hideLayout" class="auth-layout">
+    <RouterView />
+  </div>
+
+  <div v-else id="app-layout">
+
+    <header class="top-navbar">
+      <div class="navbar-left">
+        <div class="logo-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span class="brand-name">Bienestar</span>
+        </div>
+        <h1 class="page-title-header">Panel de Administración</h1>
       </div>
 
-      <nav class="main-nav">
-        <RouterLink to="/" class="nav-item">
-          <span class="icon">🏠</span> Inicio
-        </RouterLink>
-        <RouterLink to="/agenda" class="nav-item">
-          <span class="icon">📅</span> Agenda Médica
-        </RouterLink>
-        <RouterLink to="/citas" class="nav-item">
-          <span class="icon">📋</span> Citas
-        </RouterLink>
-        <RouterLink to="/pacientes" class="nav-item">
-          <span class="icon">🧑‍🤝‍🧑</span> Pacientes
-        </RouterLink>
-        <RouterLink to="/medicos" class="nav-item">
-          <span class="icon">👨‍⚕️</span> Médicos
-        </RouterLink>
-        <RouterLink to="/servicios" class="nav-item">
-          <span class="icon">💉</span> Servicios
-        </RouterLink>
-        <RouterLink to="/calendario" class="nav-item">
-          <span class="icon">🗓️</span> Calendario
-        </RouterLink>
-        <hr class="nav-separator">
-        <RouterLink to="/about" class="nav-item">
-          <span class="icon">ℹ️</span> Acerca de
-        </RouterLink>
-      </nav>
-    </aside>
-
-    <div class="content-wrapper">
-      <header class="main-header">
-        <h1 class="header-title">Panel de Administración de la Clínica</h1>
-        <div class="user-info">
-          <span class="user-name">User</span>
-          <!--<span class="user-name">Dr. Pérez</span>
-          <img src="https://via.placeholder.com/40" alt="Avatar" class="user-avatar">-->
+      <div class="navbar-right">
+        <div class="user-profile">
+          <img src="https://via.placeholder.com/35" alt="Avatar" class="avatar">
+          <span class="username">Admin</span>
         </div>
-      </header>
+        <button @click="logout" class="logout-btn" title="Cerrar Sesión">
+          <span class="icon">⏻</span> Salir
+        </button>
+      </div>
+    </header>
 
-      <main class="content-view">
-        <RouterView />
+    <div class="main-container">
 
-<<<<<<< HEAD
       <aside class="sidebar">
         <nav class="nav-menu">
           <RouterLink to="/" class="nav-link">
@@ -89,306 +78,218 @@ import { RouterLink, RouterView } from 'vue-router'
       <main class="content-area">
         <div class="content-centered-wrapper">
           <RouterView />
-=======
-        <div class="quick-links-panel">
-          <h3>Accesos Rápidos</h3>
-          <div class="link-grid">
-            <RouterLink to="/citas" class="quick-link-btn primary-bg">
-              Nueva Cita
-            </RouterLink>
-            <RouterLink to="/pacientes" class="quick-link-btn secondary-bg">
-              Nuevo Paciente
-            </RouterLink>
-            <RouterLink to="/agenda" class="quick-link-btn tertiary-bg">
-              Ver Hoy
-            </RouterLink>
-          </div>
->>>>>>> gabriel
         </div>
       </main>
+
     </div>
   </div>
 </template>
 
 <style>
-/* ========================================================= */
-/* 🎨 ESTILOS GENERALES Y VARIABLES (Tema Limpio Médico) */
-/* ========================================================= */
+/* ================= VARIABLES ================= */
 :root {
-  --primary-color: #1a73e8; /* Azul profesional y confiable */
-  --primary-light: #e8f0fe;
-  --secondary-color: #00bcd4; /* Cian para acentos o éxito */
-  --tertiary-color: #ff9800; /* Naranja suave para warnings/atención */
-  --background-color: #f7f9fc; /* Fondo muy claro y profesional */
-  --text-color: #3c4043; /* Gris oscuro para legibilidad */
-  --text-light: #ffffff;
-  --sidebar-width: 250px;
-  --header-height: 60px;
-  --border-radius: 8px;
-  --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --header-height: 64px;
+  --sidebar-width: 240px;
+  --primary-color: #1a73e8;
+  --primary-hover: #1557b0;
+  --bg-color: #f0f2f5;
+  --sidebar-bg: #ffffff;
+  --header-bg: #ffffff;
+  --text-color: #333;
+  --border-color: #e0e0e0;
 }
 
 body {
   margin: 0;
-  font-family: 'Roboto', 'Arial', sans-serif;
-  background-color: var(--background-color);
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
   color: var(--text-color);
-  line-height: 1.6;
 }
 
-/* ========================================================= */
-/* 🏠 LAYOUT PRINCIPAL (Flexbox para Sidebar y Contenido) */
-/* ========================================================= */
-#app-layout {
+/* ================= LOGIN LAYOUT ================= */
+.auth-layout {
   display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
+  background-color: var(--bg-color);
 }
 
-/* 🧭 BARRA LATERAL (SIDEBAR) */
-.sidebar-nav {
-  width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
-  background-color: var(--text-light); /* Fondo blanco */
-  box-shadow: var(--shadow-medium);
-  padding: 1.5rem 0;
-  display: flex;
-  flex-direction: column;
-  position: sticky;
+/* ================= MAIN LAYOUT ================= */
+
+/* 1. TOP NAVBAR (Fija arriba, ancho completo) */
+.top-navbar {
+  position: fixed;
   top: 0;
-  height: 100vh; /* Ocupa toda la altura */
-}
-
-/* Logo en Sidebar */
-.logo-container {
-  display: flex;
-  align-items: center;
-  padding: 0 1.5rem 1.5rem 1.5rem; /* Padding inferior para separarlo del menú */
-  border-bottom: 1px solid var(--primary-light);
-  margin-bottom: 1rem;
-}
-
-.logo-icon-wrapper {
-  background-color: var(--primary-color);
-  border-radius: var(--border-radius);
-  padding: 0.5rem;
-  margin-right: 0.5rem;
-  line-height: 0;
-}
-
-.logo-icon {
-  color: var(--text-light);
-}
-
-.clinic-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary-color);
-}
-
-/* Navegación Principal */
-.main-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0 1rem;
-}
-
-.nav-item {
-  text-decoration: none;
-  color: var(--text-color);
-  font-weight: 500;
-  padding: 0.75rem 1rem;
-  border-radius: var(--border-radius);
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-}
-
-.nav-item .icon {
-  margin-right: 0.75rem;
-  font-size: 1.1rem;
-}
-
-.nav-item:hover {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
-}
-
-/* Enlace activo */
-.nav-item.router-link-exact-active {
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  font-weight: 600;
-  box-shadow: var(--shadow-light);
-}
-
-.nav-item.router-link-exact-active .icon {
-  filter: grayscale(1) brightness(20); /* Asegura que el emoji se vea bien sobre fondo azul */
-}
-
-.nav-separator {
-  border: 0;
-  height: 1px;
-  background-color: var(--primary-light);
-  margin: 1rem 0;
-}
-
-/* ========================================================= */
-/* 📦 CONTENIDO PRINCIPAL Y HEADER SUPERIOR */
-/* ========================================================= */
-.content-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header Superior (dentro del content-wrapper) */
-.main-header {
+  left: 0;
+  width: 100%;
   height: var(--header-height);
-  background-color: var(--text-light);
-  box-shadow: var(--shadow-light);
-  padding: 0 2rem;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 990;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  z-index: 1000; /* Asegura que esté por encima de todo */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.header-title {
-  font-size: 1.25rem;
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.page-title-header {
+  font-size: 1rem;
+  color: #666;
   font-weight: 500;
-  color: var(--text-color);
   margin: 0;
 }
 
-.user-info {
+.navbar-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.5rem;
 }
 
-.user-name {
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: var(--primary-color);
 }
 
-.user-avatar {
-  width: 40px;
-  height: 40px;
+.avatar {
   border-radius: 50%;
-  object-fit: cover;
   border: 2px solid var(--primary-color);
 }
 
-/* Área de Vistas (donde se renderiza RouterView) */
-.content-view {
-  flex-grow: 1;
-  padding: 2rem;
+.logout-btn {
+  background: none;
+  border: 1px solid #ffcccc;
+  background-color: #fff5f5;
+  color: #d32f2f;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
-/* ⚡ Panel de Enlaces Rápidos */
-.quick-links-panel {
-  margin-top: 2rem;
-  background-color: var(--text-light);
-  box-shadow: var(--shadow-light);
-  padding: 1.5rem;
-  border-radius: var(--border-radius);
+.logout-btn:hover {
+  background-color: #d32f2f;
+  color: white;
+  border-color: #d32f2f;
 }
 
-.quick-links-panel h3 {
-  color: var(--primary-color);
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
-  border-bottom: 2px solid var(--primary-light);
-  padding-bottom: 0.5rem;
+/* 2. SIDEBAR (Fijo a la izquierda, debajo del header) */
+.sidebar {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--header-height));
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  padding: 1rem 0.5rem;
+  box-sizing: border-box;
 }
 
-.link-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.quick-link-btn {
-  color: var(--text-light);
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #5f6368;
   text-decoration: none;
-  padding: 1rem;
-  border-radius: var(--border-radius);
-  font-weight: 600;
+  border-radius: 0 25px 25px 0; /* Borde redondeado solo a la derecha */
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: #f1f3f4;
+  color: var(--primary-color);
+}
+
+.nav-link.router-link-active {
+  background-color: #e8f0fe;
+  color: var(--primary-color);
+}
+
+.nav-link .icon {
+  margin-right: 1rem;
+  font-size: 1.1rem;
+  width: 24px;
   text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-light);
 }
 
-.quick-link-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+.nav-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.5rem 1rem;
 }
 
-/* Clases de colores para los botones */
-.primary-bg {
-  background-color: var(--primary-color);
-}
-.secondary-bg {
-  background-color: var(--secondary-color);
-}
-.tertiary-bg {
-  background-color: var(--tertiary-color);
-}
+/* 3. CONTENT AREA (Desplazado a la derecha y abajo) */
+.content-area {
+  margin-top: var(--header-height);
+  margin-left: var(--sidebar-width);
+  padding: 2rem;
+  min-height: calc(100vh - var(--header-height));
+  box-sizing: border-box;
 
-
-/* ========================================================= */
-/* 📱 MEDIA QUERIES (Responsivo) */
-/* ========================================================= */
-
-@media (max-width: 1024px) {
-  .sidebar-nav {
-    width: 200px;
-    min-width: 200px;
-  }
-  .content-view {
-    padding: 1.5rem;
-  }
+  /* Centrado del contenido */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente el wrapper */
+  align-items: flex-start; /* Alinea arriba (no verticalmente al centro) */
 }
 
+/* Wrapper para limitar el ancho del contenido y que se vea "central" */
+.content-centered-wrapper {
+  width: 100%;
+  max-width: 1200px; /* Ancho máximo para que no se estire demasiado en monitores grandes */
+  background: white; /* Opcional: si quieres que parezca una hoja de papel */
+  padding: 2rem; /* Espaciado interno */
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Sutil sombra */
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
-  /* Oculta la sidebar y mueve la navegación a la parte superior (opcionalmente oculta con un menú hamburguesa) */
-  .sidebar-nav {
-    display: none; /* Simplificamos para el móvil */
+  /* En móviles, ocultamos sidebar y ajustamos contenido */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
   }
 
-  #app-layout {
-    flex-direction: column;
-  }
-
-  .main-header {
-    height: auto;
-    padding: 1rem 1rem;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .header-title {
-    font-size: 1.1rem;
-  }
-
-  .user-info {
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .content-view {
+  .content-area {
+    margin-left: 0;
     padding: 1rem;
   }
 
-  .link-grid {
-    grid-template-columns: 1fr; /* Una columna en móvil */
+  .navbar-left h1 {
+    display: none; /* Ocultar título en móvil */
   }
 }
 </style>
-
