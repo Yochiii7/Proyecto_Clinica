@@ -7,6 +7,7 @@ import AgendaView from '../views/AgendaView.vue'
 import DoctoresView from '../views/DoctoresView.vue'
 import CalendarioView from '../views/CalendarioView.vue'
 import ServiciosView from '../views/ServiciosView.vue'
+import PaymentsView from '../views/PaymentsView.vue'
 
 // Vistas nuevas de Autenticación
 import LoginView from '../views/LoginView.vue'
@@ -58,6 +59,12 @@ const routes = [
   {
     path: '/servicios',
     component: ServiciosView,
+    meta: { requiresAuth: true }
+  }
+  ,
+  {
+    path: '/payments',
+    component: PaymentsView,
     meta: { requiresAuth: true }
   }
 ]

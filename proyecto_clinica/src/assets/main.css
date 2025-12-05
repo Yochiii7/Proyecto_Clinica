@@ -22,14 +22,9 @@ a,
 }
 
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
+  /* Evitar transformar #app en grid de dos columnas, para no estrechar
+     el contenido principal que ya está manejado por `App.vue`. */
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
   }
 }

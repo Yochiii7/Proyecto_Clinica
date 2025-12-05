@@ -63,6 +63,10 @@ const logout = () => {
             <span class="icon">💉</span> Servicios
           </RouterLink>
 
+          <RouterLink to="/payments" class="nav-link">
+            <span class="icon">💰</span> Pagos
+          </RouterLink>
+
           <div class="nav-divider"></div>
 
           <RouterLink to="/about" class="nav-link">
