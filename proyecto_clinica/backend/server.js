@@ -9,6 +9,8 @@ const pacientesRoutes = require('./routes/pacientes');
 const facturasRoutes = require('./routes/facturas');
 const servicioRoutes = require('./routes/servicios');
 const doctorRoutes = require('./routes/doctores');
+const citasRoutes = require('./routes/citas');
+const especialidadesRoutes = require('./routes/especialidades');
 
 // --- 2. CONFIGURACIÓN INICIAL ---
 const app = express();
@@ -28,6 +30,8 @@ app.use('/api/pacientes', pacientesRoutes);
 app.use('/api/facturas', facturasRoutes);
 app.use('/api/servicios', servicioRoutes);
 app.use('/api/doctores', doctorRoutes);
+app.use('/api/citas', citasRoutes);
+app.use('/api/especialidades', especialidadesRoutes);
 
 // --- 4. INICIAR SERVIDOR Y BASE DE DATOS ---
 async function start() {

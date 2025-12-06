@@ -1,8 +1,22 @@
 const Doctor = require('../models/Doctor');
+const db = require('../config/db');
 
 // Listar todos
 exports.obtenerDoctores = async (req, res) => {
   try {
+    const { especialidad } = req.query;
+    if (especialidad) {
+      // Si filtran por especialidad, hacemos un JOIN con la tabla doctor_especialidad
+      const query = `
+        SELECT d.* FROM doctores d
+        JOIN doctor_especialidad de ON d.cod_doctor = de.cod_doctor
+        WHERE de.cod_especialidad = ?
+        ORDER BY d.nombre_doctor ASC
+      `;
+      const [rows] = await db.query(query, { replacements: [especialidad] });
+      return res.json(rows);
+    }
+
     const doctores = await Doctor.findAll({ order: [['nombre_doctor', 'ASC']] });
     res.json(doctores);
   } catch (error) {
@@ -62,15 +76,15 @@ exports.actualizarDoctor = async (req, res) => {
     const doctor = await Doctor.findOne({ where: { dni_doctor } });
     if (!doctor) return res.status(404).json({ mensaje: 'Doctor no encontrado' });
 
-    await doctor.update({ 
-      nombre_doctor, 
-      apellido_doctor, 
-      sexo, 
-      telefono, 
-      fecha_nacimiento, 
-      correo, 
-      nacionalidad, 
-      estado 
+    await doctor.update({
+      nombre_doctor,
+      apellido_doctor,
+      sexo,
+      telefono,
+      fecha_nacimiento,
+      correo,
+      nacionalidad,
+      estado
     });
     res.json({ mensaje: 'Doctor actualizado correctamente', doctor });
   } catch (error) {
